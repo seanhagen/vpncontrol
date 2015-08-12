@@ -1,6 +1,6 @@
 (ns vpncontrol.core
-  (:require [clj-http.client :as client])
-  (:use clj-ssh.ssh)
+  (:require [clj-http.client :as client]
+            [clj-ssh.ssh :as ssh])
   (:gen-class))
 
 (def config (read-string (slurp "./config.clj")))
@@ -14,6 +14,11 @@
 (def vpn-api-user (:api-user config))
 (def vpn-api-pass (:api-password config))
 
+(defn -main
+  "I don't do a whole lot ... yet."
+  [& args]
+  (println "Hello, World!"))
+
 (defn vpn-req
   "Turns a client ID into a request body string"
   [client]
@@ -24,12 +29,6 @@
   [client]
   {:basic-auth [vpn-api-user vpn-api-pass]
    :body (vpn-req client)})
-
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
-
 
 (defn get-vpn-status-body
   "Get body from vpnstatus.cgi for a client"
@@ -54,11 +53,11 @@
 (defn vpn-command
   "Turns on or off the specified VPN"
   [client on-or-off]
-  (let [agent (ssh-agent {:use-system-ssh-agent false})]
-    (add-identity agent {:private-key-path router-ssh-key})
-    (let [session (session agent router-ssh-host {:strict_host-key-checking :no :username router-ssh-user})]
-      (with-connection session
-        (let [result (ssh session {:cmd (vpn-client-command client on-or-off)})]
+  (let [agent (ssh/ssh-agent {:use-system-ssh-agent false})]
+    (ssh/add-identity agent {:private-key-path router-ssh-key})
+    (let [session (ssh/session agent router-ssh-host {:strict_host-key-checking :no :username router-ssh-user})]
+      (ssh/with-connection session
+        (let [result (ssh/ssh session {:cmd (vpn-client-command client on-or-off)})]
           (println (result :out))
           result)))))
 
