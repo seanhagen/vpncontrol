@@ -2,6 +2,7 @@
 
 This is an app I built that can control the VPN clients configured in a Tomato-based router.
 
+My goal is that this will end up being a stand-alone app that presents a web interface super simple. I wanted something that would let my girlfriend turn the VPN on/off ( mostly for Netflix purposes ) without having to know how to deal with the Tomato web interface.
 
 ## Usage
 
